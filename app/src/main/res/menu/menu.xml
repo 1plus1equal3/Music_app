@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/play_music"
+        android:icon="@drawable/ic_play_music"
+        app:showAsAction="always"
+        android:title="Play"
+        />
+    <item android:id="@+id/stop_music"
+        android:icon="@drawable/ic_stop_music"
+        app:showAsAction="always"
+        android:title="Stop"
+        />
+    <item android:id="@+id/favorite_music"
+        android:icon="@drawable/ic_select"
+        app:showAsAction="always"
+        android:title="Favorite Music"
+        />
+
+</menu>
