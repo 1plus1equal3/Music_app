@@ -39,19 +39,23 @@ public class StorageFragment extends Fragment {
         String[] projections = new String[]{
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.DATA
         };
         Cursor cursor = musicResolver.query(musicUri, projections, null, null, null);
         int idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
         int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
         int artistColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-        if (cursor.moveToFirst()) {
+        int pathColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+        if (cursor.moveToFirst() && cursor!=null) {
             int i = 1;
             do {
                 long id = cursor.getLong(idColumn);
+                //Taking audio file path
+                String path = cursor.getString(pathColumn);
                 String title = cursor.getString(titleColumn);
                 String artist = cursor.getString(artistColumn);
-                songs.add(new Song(i, slicer(title), artist));
+                songs.add(new Song(i, slicer(title), artist, path));
                 i++;
                 /*Uri contentUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);*/
                 Log.d("abc123", "123abc");
