@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tab);
         adapter = new Adapter(this);
         viewPager2.setAdapter(adapter);
+        viewPager2.setOffscreenPageLimit(2);
         new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {

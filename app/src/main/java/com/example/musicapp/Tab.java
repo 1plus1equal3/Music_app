@@ -1,6 +1,7 @@
 package com.example.musicapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.example.musicapp.fragment.FavoriteFragment;
 import com.example.musicapp.fragment.StorageFragment;
 
 public class Tab extends Fragment {
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -31,6 +33,8 @@ public class Tab extends Fragment {
 
 class Adapter extends FragmentStateAdapter{
 
+    Fragment homeFragment = null,
+            favoriteFragment = null, storageFragment = null;
 
     public Adapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
@@ -41,11 +45,25 @@ class Adapter extends FragmentStateAdapter{
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new HomeFragment();
+                if(homeFragment == null){
+                    homeFragment = new HomeFragment();
+                    Log.e("Log:",  "new Home Fragment");
+                    return homeFragment;
+                }
+                Log.e("Log:",  "already created Home Fragment");
+                return homeFragment;
             case 1:
-                return new FavoriteFragment();
+                if(favoriteFragment == null){
+                    favoriteFragment = new FavoriteFragment();
+                    return favoriteFragment;
+                }
+                return favoriteFragment;
             case 2:
-                return new StorageFragment();
+                if(storageFragment == null){
+                    storageFragment = new StorageFragment();
+                    return storageFragment;
+                }
+                return storageFragment;
             default:
                 return new Tab();
         }

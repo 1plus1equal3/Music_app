@@ -1,14 +1,23 @@
 package com.example.musicapp.fragment;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import com.example.musicapp.R;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -25,7 +34,7 @@ public class SavedSongsAdapter extends BaseAdapter {
     private static ArrayList<Boolean> checker = new ArrayList<>();
 
     public SavedSongsAdapter(ArrayList<Song> songs1, Context context) {
-        this.context=context;
+        this.context = context;
         this.songs1 = songs1;
     }
 
@@ -46,9 +55,11 @@ public class SavedSongsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        for(int j = 0; j < songs1.size(); j++){
+        for (int j = 0; j < songs1.size(); j++) {
             checker.add(j, true);
         }
+        //Generate music player
+
         player = new ExoPlayer.Builder(context).build();
         View rowView = view.inflate(viewGroup.getContext(), R.layout.saved_songs_item, null);
         id = rowView.findViewById(R.id.song_id);
@@ -60,51 +71,107 @@ public class SavedSongsAdapter extends BaseAdapter {
         rowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*openSelectDialog(songs1.get(i));*/
+                /*                *//*openSelectDialog(songs1.get(i));*//*
                 Log.e("Log: ", songs1.get(i).getPath());
                 //play song
-                if(checker.get(i))
+                if (checker.get(i)) {
                     prepareSong(songs1.get(i).getPath(), context, i, songs1.size());
+                    Log.e("Prepare song: ", songs1.get(i).getTitle());
+                }
                 if (getSongState()) {
+                    Log.e("Song: ", songs1.get(i).getTitle() + " has played");
                     player.setPlayWhenReady(true);
                     player.getPlaybackState();
                 } else {
+                    Log.e("Song: ", songs1.get(i).getTitle() + " has stopped");
                     player.setPlayWhenReady(false);
                     player.getPlaybackState();
+                }     */
+                Log.e("Service: ", "Run");
+                AppCompatActivity activity = (AppCompatActivity) context;
+                Intent intent = new Intent(context, musicService.class);
+                intent.putExtra("song", songs1.get(i));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    activity.startForegroundService(intent);
+                }
+                {
+                    activity.startService(intent);
                 }
             }
         });
         return rowView;
     }
 
+    public void musicServiceController() {
 
+
+    }
 
     public void openSelectDialog(Song song) {
         //Open Dialog fragment here
         AppCompatActivity activity = (AppCompatActivity) context;
         SelectedSong fragment = new SelectedSong();
         fragment.setSong(song);
-        activity.getSupportFragmentManager().beginTransaction()
-                .add(fragment, "Selected song")
-                .commit();
+        activity.getSupportFragmentManager().beginTransaction().add(fragment, "Selected song").commit();
+    }
+
+    //Music service
+    public class musicService extends Service {
+
+        private ExoPlayer player;
+        private Song song;
+
+
+        @Nullable
+        @Override
+        public IBinder onBind(Intent intent) {
+            return null;
+        }
+
+        @Override
+        public void onCreate() {
+            startForeground(1, new Notification());
+            player = new ExoPlayer.Builder(context).build();
+            Uri uri = Uri.parse(song.getPath());
+            MediaItem mediaItem = MediaItem.fromUri(uri);
+            player.setMediaItem(mediaItem);
+            player.prepare();
+            Log.e("Service: ", "Started");
+            super.onCreate();
+        }
+
+        @Override
+        public int onStartCommand(Intent intent, int flags, int startId) {
+            song = (Song) intent.getSerializableExtra("song");
+            player.play();
+            return super.onStartCommand(intent, flags, startId);
+        }
+
+        @Override
+        public void onDestroy() {
+            player.stop();
+            super.onDestroy();
+        }
+
+
     }
 
     //prepare song here
     public static void prepareSong(String path, Context context, int i, int size) {
-            StyledPlayerControlView view = new StyledPlayerControlView(context);
-            Uri uri = Uri.parse(path);
-            MediaItem mediaItem = MediaItem.fromUri(uri);
-            player.setMediaItem(mediaItem);
-            player.prepare();
-        for(int j = 0; j<size; j++){
+        StyledPlayerControlView view = new StyledPlayerControlView(context);
+        Uri uri = Uri.parse(path);
+        MediaItem mediaItem = MediaItem.fromUri(uri);
+        player.setMediaItem(mediaItem);
+        player.prepare();
+        for (int j = 0; j < size; j++) {
             checker.set(j, true);
         }
-            checker.set(i, false);
-/*            player.play();*/
+        checker.set(i, false);
+        /*            player.play();*/
     }
 
-    public boolean getSongState (){
-        if(player.isPlaying()){
+    public boolean getSongState() {
+        if (player.isPlaying()) {
             return false;
         }
         return true;
