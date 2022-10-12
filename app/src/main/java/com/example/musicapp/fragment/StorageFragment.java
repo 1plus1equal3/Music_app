@@ -66,9 +66,12 @@ public class StorageFragment extends Fragment {
     }
 
     public String slicer(String name) {
-        String lim = name.charAt(10) + "";
-        String[] slice = name.split(lim, 2);
-        return slice[0] + "...";
+        if (name.length() > 10) {
+            String lim = name.charAt(5) + "";
+            String[] slice = name.split(lim, 2);
+            return slice[0] + "...";
+        }
+        return name;
     }
 
 }
