@@ -3,6 +3,7 @@ package com.example.musicapp.fragment;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
+import com.example.musicapp.MainActivity;
 import com.example.musicapp.R;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -116,46 +118,6 @@ public class SavedSongsAdapter extends BaseAdapter {
     }
 
     //Music service
-    public class musicService extends Service {
-
-        private ExoPlayer player;
-        private Song song;
-
-
-        @Nullable
-        @Override
-        public IBinder onBind(Intent intent) {
-            return null;
-        }
-
-        @Override
-        public void onCreate() {
-            startForeground(1, new Notification());
-            player = new ExoPlayer.Builder(context).build();
-            Uri uri = Uri.parse(song.getPath());
-            MediaItem mediaItem = MediaItem.fromUri(uri);
-            player.setMediaItem(mediaItem);
-            player.prepare();
-            Log.e("Service: ", "Started");
-            super.onCreate();
-        }
-
-        @Override
-        public int onStartCommand(Intent intent, int flags, int startId) {
-            song = (Song) intent.getSerializableExtra("song");
-            player.play();
-            return super.onStartCommand(intent, flags, startId);
-        }
-
-        @Override
-        public void onDestroy() {
-            player.stop();
-            super.onDestroy();
-        }
-
-
-    }
-
     //prepare song here
     public static void prepareSong(String path, Context context, int i, int size) {
         StyledPlayerControlView view = new StyledPlayerControlView(context);
@@ -178,3 +140,66 @@ public class SavedSongsAdapter extends BaseAdapter {
     }
 
 }
+
+class musicService extends Service {
+
+    private ExoPlayer player;
+    private Song song;
+
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onCreate() {
+     super.onCreate();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        //Create notification
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, notificationIntent, 0);
+        Notification notification = new NotificationCompat.Builder(getApplicationContext(), "1")
+                .setContentTitle("Foreground Service")
+                .setContentText("text")
+                .setSmallIcon(R.drawable.ic_storage)
+                .setContentIntent(pendingIntent)
+                .build();
+        //play music
+        song = (Song) intent.getSerializableExtra("song");
+        player = new ExoPlayer.Builder(getApplicationContext()).build();
+        Uri uri = Uri.parse(song.getPath());
+        MediaItem mediaItem = MediaItem.fromUri(uri);
+        player.setMediaItem(mediaItem);
+        player.prepare();
+        player.play();
+        Log.e("Service: ", "Started");
+        startForeground(1, notification);
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        player.stop();
+        super.onDestroy();
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    "1",
+                    "Foreground Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
+    }
+
+}
+
