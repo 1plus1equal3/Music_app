@@ -18,10 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicApp"
         tools:targetApi="31">
-        <service android:name=".fragment.SavedSongsAdapter$musicService"
-            android:enabled="true"
-            android:exported="true">
-        </service>
+        <service android:name=".fragment.musicService"/>
         <activity
             android:name=".SearchActivity"
             android:exported="false">

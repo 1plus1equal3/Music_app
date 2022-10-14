@@ -63,12 +63,12 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 switch (tab.getPosition()) {
                     case 0:
-                        Log.d("abc123", "Home");
+                        Log.e("Tab: ", "Home");
                         break;
                     case 1:
-                        Log.d("abc123", "Favorite");
+                        Log.e("Tab: ", "Favorite");
                     case 2:
-                        Log.d("abc123", "Storage");
+                        Log.e("Tab: ", "Storage");
                 }
             }
 

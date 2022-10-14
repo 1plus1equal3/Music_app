@@ -1,7 +1,6 @@
 package com.example.musicapp.fragment;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,18 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.example.musicapp.R;
-
 import java.util.ArrayList;
 
 public class StorageFragment extends Fragment {
     public ListView songList;
-    ArrayList<Song> songs = new ArrayList<Song>();
+    ArrayList<Song> songs = new ArrayList<>();
     SavedSongsAdapter savedSongsAdapter;
 
     @Nullable
@@ -58,7 +54,7 @@ public class StorageFragment extends Fragment {
                 songs.add(new Song(i, slicer(title), artist, path));
                 i++;
                 /*Uri contentUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);*/
-                Log.d("abc123", "123abc");
+                Log.e("Get music: ", "Success");
             } while (cursor.moveToNext());
             savedSongsAdapter = new SavedSongsAdapter(songs, getContext());
             songList.setAdapter(savedSongsAdapter);
