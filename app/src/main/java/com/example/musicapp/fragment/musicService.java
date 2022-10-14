@@ -11,6 +11,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
@@ -19,12 +20,15 @@ import com.example.musicapp.MainActivity;
 import com.example.musicapp.R;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.Player;
+
+
+import java.util.ArrayList;
 
 public class musicService extends Service {
 
     private ExoPlayer player;
     private Song song;
+    private ArrayList<Song> getSongPaths = new ArrayList<>();
 
 
     @Nullable
@@ -36,15 +40,6 @@ public class musicService extends Service {
     @Override
     public void onCreate() {
         player = new ExoPlayer.Builder(getApplicationContext()).build();
-        player.addListener(new Player.Listener() {
-            @Override
-            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                if(playbackState == Player.STATE_ENDED) {
-
-                }
-                Player.Listener.super.onPlayerStateChanged(playWhenReady, playbackState);
-            }
-        });
         super.onCreate();
     }
 
@@ -64,11 +59,38 @@ public class musicService extends Service {
                 .setContentText("Music")
                 .setSmallIcon(R.drawable.ic_storage)
                 .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .build();
+        getSongPaths = (ArrayList<Song>) intent.getSerializableExtra("Song lists");
+/*        Bundle bundle = intent.getExtras();
+        pathLists = bundle.getStringArrayList("Song list");*/
         //play music
-
+      /*  Bundle bundle = intent.getExtras();
+        pathLists = bundle.getStringArrayList("Song list");
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                if(playbackState == Player.STATE_ENDED) {
+                int currentPosition = (int) song.get_ID();
+                Uri uri = Uri.parse(pathLists.get(currentPosition+1));
+                MediaItem mediaItem = MediaItem.fromUri(uri);
+                player.setMediaItem(mediaItem);
+                player.prepare();
+                player.play();
+                }
+                Player.Listener.super.onPlayerStateChanged(playWhenReady, playbackState);
+            }
+        });*/
         if(checkService1) {
-            Log.e("Music: ", "Prepare");
+/*            Log.e("Music: ", "Prepare");
+            song = (Song) intent.getSerializableExtra("song");
+            int currentPosition = (int) song.get_ID();
+            for(int k = currentPosition; k<getSongPaths.size(); k++){
+                Uri uri = Uri.parse(getSongPaths.get(k).getPath());
+                MediaItem mediaItem = MediaItem.fromUri(uri);
+                player.addMediaItem(mediaItem);
+            }
+            player.prepare();*/
             song = (Song) intent.getSerializableExtra("song");
             Uri uri = Uri.parse(song.getPath());
             MediaItem mediaItem = MediaItem.fromUri(uri);
@@ -94,8 +116,6 @@ public class musicService extends Service {
             checkService = true;
 */
         }
-
-
         return START_STICKY;
     }
 

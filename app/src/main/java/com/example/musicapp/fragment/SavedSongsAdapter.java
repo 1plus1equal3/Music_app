@@ -3,6 +3,7 @@ package com.example.musicapp.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ public class SavedSongsAdapter extends BaseAdapter {
     private final Context context;
     private Intent intent;
     private AppCompatActivity activity;
+
+
 
     public SavedSongsAdapter(ArrayList<Song> songs1, Context context) {
         this.context = context;
@@ -65,6 +68,7 @@ public class SavedSongsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
+
         for (int j = 0; j < songs1.size(); j++) {
             checker.add(j, true);
         }
@@ -109,6 +113,7 @@ public class SavedSongsAdapter extends BaseAdapter {
                     }
                     checker1.set(i, false);
                     intent.putExtra("song", songs1.get(i));
+                    intent.putExtra("Song lists", songs1);
                     Log.e("Service: ", "Run");
                     activity.startForegroundService(intent);
                     for (int j = 0; j < songs1.size(); j++) {

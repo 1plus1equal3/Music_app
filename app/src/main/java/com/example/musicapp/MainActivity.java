@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,12 +30,18 @@ public class MainActivity extends AppCompatActivity {
     ViewPager2 viewPager2;
     Adapter adapter;
     TabLayout tabLayout;
-    Toolbar toolbar;
+    LinearLayout songController;
+    Button play, leftRewind, rightRewind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //get view's ids
+        songController = findViewById(R.id.song_controller);
+        play = findViewById(R.id.play_btn);
+        leftRewind = findViewById(R.id.left_rewind_btn);
+        rightRewind = findViewById(R.id.right_rewind_btn);
         viewPager2 = findViewById(R.id.vp2);
         tabLayout = findViewById(R.id.tab);
         adapter = new Adapter(this);
@@ -126,7 +135,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Stop music", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.favorite_music:
-
+                if(songController.getVisibility() == View.GONE) {
+                    songController.setVisibility(View.VISIBLE);
+                } else {
+                    songController.setVisibility(View.GONE);
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
