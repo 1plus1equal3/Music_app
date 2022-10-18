@@ -3,52 +3,48 @@ package com.example.musicapp.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.musicapp.R;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.StyledPlayerControlView;
 
 import java.util.ArrayList;
 
 public class SavedSongsAdapter extends BaseAdapter {
-    static boolean checkService = true;
-    private static ExoPlayer player;
-    private static ArrayList<Boolean> checker = new ArrayList<>();
     public static ArrayList<Boolean> checker1 = new ArrayList<>();
+    static boolean checkService = true;
     static boolean checkService1;
+    private static ExoPlayer player;
+    private static PlayerControlView playerView;
+    private static ArrayList<Boolean> checker = new ArrayList<>();
     final ArrayList<Song> songs1;
-    private TextView id, title, artist;
     private final Context context;
-    private Intent intent;
+    private TextView id, title, artist;
     private AppCompatActivity activity;
-
-
 
     public SavedSongsAdapter(ArrayList<Song> songs1, Context context) {
         this.context = context;
         this.songs1 = songs1;
     }
 
-    //Music service
-    //prepare song here
-    public static void prepareSong(String path, Context context, int i, int size) {
-        StyledPlayerControlView view = new StyledPlayerControlView(context);
-        Uri uri = Uri.parse(path);
-        MediaItem mediaItem = MediaItem.fromUri(uri);
-        player.setMediaItem(mediaItem);
-        player.prepare();
-        for (int j = 0; j < size; j++) {
-            checker.set(j, true);
-        }
-        checker.set(i, false);
-        /*            player.play();*/
+    public SavedSongsAdapter(ArrayList<Song> songs1, Context context, ExoPlayer player) {
+        this.context = context;
+        this.songs1 = songs1;
+        this.player = player;
+    }
+
+
+    public static void getPlayerControlView(PlayerControlView playerControlView) {
+        playerView = playerControlView;
     }
 
     @Override
@@ -75,10 +71,7 @@ public class SavedSongsAdapter extends BaseAdapter {
         for (int j = 0; j < songs1.size(); j++) {
             checker1.add(j, true);
         }
-        //Generate music player
-        intent = new Intent(context, musicService.class);
         activity = (AppCompatActivity) context;
-        player = new ExoPlayer.Builder(context).build();
         View rowView = View.inflate(viewGroup.getContext(), R.layout.saved_songs_item, null);
         id = rowView.findViewById(R.id.song_id);
         title = rowView.findViewById(R.id.song_title);
@@ -105,7 +98,7 @@ public class SavedSongsAdapter extends BaseAdapter {
                     player.setPlayWhenReady(false);
                     player.getPlaybackState();
                 }     */
-                if (checker.get(i)) {
+/*                if (checker.get(i)) {
                     checkService = checker.get(i);
                     checkService1 = checker1.get(i);
                     for (int j = 0; j < songs1.size(); j++) {
@@ -125,27 +118,24 @@ public class SavedSongsAdapter extends BaseAdapter {
                     checkService1 = checker1.get(i);
                     activity.startForegroundService(intent);
                     checker.set(i, true);
+                }*/
+
+                //Set Visibility to PlayerControlView
+                if (playerView.getVisibility() == View.GONE) {
+                    playerView.setVisibility(View.VISIBLE);
                 }
+                Uri uri = Uri.parse(songs1.get(i).getPath());
+                MediaItem mediaItem = MediaItem.fromUri(uri);
+                player.setMediaItem(mediaItem);
+                player.prepare();
+                player.play();
+                //Start foreground service
+                Log.e("Service: ", "Started");
+                Intent intent = new Intent(context.getApplicationContext(), musicService.class);
+                activity.startService(intent);
             }
         });
         return rowView;
-    }
-
-    public void musicServiceController() {
-
-
-    }
-
-    public void openSelectDialog(Song song) {
-        //Open Dialog fragment here
-        AppCompatActivity activity = (AppCompatActivity) context;
-        SelectedSong fragment = new SelectedSong();
-        fragment.setSong(song);
-        activity.getSupportFragmentManager().beginTransaction().add(fragment, "Selected song").commit();
-    }
-
-    public boolean getSongState() {
-        return !player.isPlaying();
     }
 
 }

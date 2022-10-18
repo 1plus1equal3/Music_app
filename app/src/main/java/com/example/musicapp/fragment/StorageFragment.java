@@ -10,16 +10,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.example.musicapp.MainActivity;
 import com.example.musicapp.R;
+import com.google.android.exoplayer2.ExoPlayer;
+
 import java.util.ArrayList;
 
 public class StorageFragment extends Fragment {
     public ListView songList;
     ArrayList<Song> songs = new ArrayList<>();
     SavedSongsAdapter savedSongsAdapter;
+    static ExoPlayer player1;
 
     @Nullable
     @Override
@@ -43,7 +49,7 @@ public class StorageFragment extends Fragment {
         int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
         int artistColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
         int pathColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-        if (cursor.moveToFirst() && cursor!=null) {
+        if (cursor.moveToFirst() && cursor != null) {
             int i = 1;
             do {
                 long id = cursor.getLong(idColumn);
@@ -56,8 +62,9 @@ public class StorageFragment extends Fragment {
                 /*Uri contentUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);*/
                 Log.e("Get music: ", "Success");
             } while (cursor.moveToNext());
-            savedSongsAdapter = new SavedSongsAdapter(songs, getContext());
+            savedSongsAdapter = new SavedSongsAdapter(songs, getContext(), player1);
             songList.setAdapter(savedSongsAdapter);
+            MainActivity.getSongs(songs);
         }
     }
 
@@ -69,6 +76,11 @@ public class StorageFragment extends Fragment {
         }
         return name;
     }
+
+    public static void getPlayer(ExoPlayer player){
+        player1 = player;
+    }
+
 
 }
 

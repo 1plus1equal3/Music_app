@@ -29,6 +29,7 @@ public class FavoriteFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //List of favorite songs (adapter + addSong + notifDataSetChanged)
+/*        savedSongsAdapter = new SavedSongsAdapter(songs, getContext());*/
         savedSongsAdapter = new SavedSongsAdapter(songs, getContext());
         listView = view.findViewById(R.id.song_list1);
         listView.setAdapter(savedSongsAdapter);

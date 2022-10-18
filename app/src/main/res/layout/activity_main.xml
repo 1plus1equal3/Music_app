@@ -21,7 +21,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:tabTextColor="@color/white" />
 
-    <LinearLayout
+    <com.google.android.exoplayer2.ui.PlayerControlView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/playercontrolView"
+        android:visibility="gone"
+        app:show_timeout="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tab" />
+
+<!--    <LinearLayout
         android:id="@+id/song_controller"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -51,8 +61,5 @@
             android:layout_height="wrap_content"
             android:background="@drawable/ic_action_skip_right_btn"
             />
-
-
-
-    </LinearLayout>
+    </LinearLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>
